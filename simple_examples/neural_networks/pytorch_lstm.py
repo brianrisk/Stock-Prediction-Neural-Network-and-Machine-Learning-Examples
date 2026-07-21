@@ -1,13 +1,13 @@
-import pandas as pd
+from data_utils import load_labeled_data, load_latest_data
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import confusion_matrix
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from common import DATA_DIR, print_statistics
+from common import print_statistics
 
 # Step 1: Data Preparation
-data_train = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+data_train = load_labeled_data('train.csv')
 X_train = data_train.iloc[:, :-1].values
 Y_train = data_train.iloc[:, -1].values
 
@@ -50,7 +50,7 @@ for epoch in range(10):
         optimizer.step()
 
 # Step 3: Model Testing
-data_test = pd.read_csv(DATA_DIR / 'test.csv', header=None)
+data_test = load_labeled_data('test.csv')
 X_test = data_test.iloc[:, :-1].values
 Y_test = data_test.iloc[:, -1].values
 X_test = scaler.transform(X_test)
@@ -62,7 +62,7 @@ TN, FP, FN, TP = confusion_matrix(Y_test, predictions).ravel()
 print_statistics(tp=TP, fp=FP, tn=TN, fn=FN)
 
 # Step 4: Creating Predictions
-data_latest = pd.read_csv(DATA_DIR / 'latest.csv')
+data_latest = load_latest_data()
 X_latest = data_latest.iloc[:, 1:].values
 X_latest = scaler.transform(X_latest)
 

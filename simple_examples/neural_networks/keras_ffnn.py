@@ -1,14 +1,14 @@
-import pandas as pd
+from data_utils import load_labeled_data, load_latest_data
 from keras import layers
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 
-from common import DATA_DIR, print_statistics
+from common import print_statistics
 
 # Step 1: Data Preparation
 # Load training data
-data_train = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+data_train = load_labeled_data('train.csv')
 # Separate into X and Y
 X_train = data_train.iloc[:, :-1]
 Y_train = data_train.iloc[:, -1]
@@ -33,7 +33,7 @@ model.fit(X_train_scaled, Y_train, epochs=10, batch_size=32)
 
 # Step 4: Model Testing
 # Load and scale the test data
-data_test = pd.read_csv(DATA_DIR / 'test.csv', header=None)
+data_test = load_labeled_data('test.csv')
 X_test = data_test.iloc[:, :-1]
 Y_test = data_test.iloc[:, -1]
 X_test_scaled = scaler.transform(X_test)
@@ -47,7 +47,7 @@ print_statistics(tp=tp, fp=fp, tn=tn, fn=fn)
 
 # Step 5: Creating Predictions
 # Load data
-data_latest = pd.read_csv(DATA_DIR / 'latest.csv')
+data_latest = load_latest_data()
 stock_tickers = data_latest.iloc[:, 0]
 feature_vectors = data_latest.iloc[:, 1:]
 # Scale the feature vectors

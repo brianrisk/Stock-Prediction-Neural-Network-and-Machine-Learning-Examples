@@ -3,12 +3,10 @@
 # as a high number of true positives.
 
 import random
-import pandas as pd
-from common import DATA_DIR, print_statistics
+from common import print_statistics
+from data_utils import load_labeled_data
 
 # Global Constants
-TRAIN_CSV = DATA_DIR / 'train.csv'
-TEST_CSV = DATA_DIR / 'test.csv'
 GENES_MIN = 2
 GENES_MAX = 8
 GENE_BOUND_MIN = 0.5
@@ -55,8 +53,8 @@ class Chromosome:
 
 
 def main():
-    train_data = pd.read_csv(TRAIN_CSV, header=None)
-    test_data = pd.read_csv(TEST_CSV, header=None)
+    train_data = load_labeled_data('train.csv')
+    test_data = load_labeled_data('test.csv')
 
     feature_count = train_data.shape[1] - 1
     population = [Chromosome(feature_count) for _ in range(POPULATION_SIZE)]

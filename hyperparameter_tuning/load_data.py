@@ -1,15 +1,14 @@
-import pandas as pd
 import torch
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset
 
-from common import DATA_DIR
+from data_utils import load_labeled_data
 from hyperparameter_tuning.config import EMBARGO_ROWS, VALIDATION_FRACTION
 from validation import chronological_split
 
 
 def load_data():
-    all_train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+    all_train_data = load_labeled_data('train.csv')
     train_data, validation_data = chronological_split(
         all_train_data,
         validation_fraction=VALIDATION_FRACTION,

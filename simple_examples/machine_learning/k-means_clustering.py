@@ -1,12 +1,12 @@
-import pandas as pd
+from data_utils import load_labeled_data, load_latest_data
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import confusion_matrix
-from common import DATA_DIR, print_statistics
+from common import print_statistics
 
 # Step 1: Data Preparation
 # 1. Load the training data from train.csv (no header)
-data_train = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+data_train = load_labeled_data('train.csv')
 # 2. Separate data into X (features) and Y (labels)
 X_train = data_train.iloc[:, :-1]
 Y_train = data_train.iloc[:, -1]
@@ -28,7 +28,7 @@ positive_cluster = max(
 
 # Step 3: Model Testing
 # 1. Load and scale the test data from test.csv using scaler
-data_test = pd.read_csv(DATA_DIR / 'test.csv', header=None)
+data_test = load_labeled_data('test.csv')
 X_test = data_test.iloc[:, :-1]
 Y_test = data_test.iloc[:, -1]
 X_test_scaled = scaler.transform(X_test)
@@ -42,7 +42,7 @@ print_statistics(tp=tp, fp=fp, tn=tn, fn=fn)
 
 # Step 4: Creating Predictions
 # 1. Load data from latest.csv
-data_latest = pd.read_csv(DATA_DIR / 'latest.csv')
+data_latest = load_latest_data()
 stock_tickers = data_latest.iloc[:, 0]
 features_latest = data_latest.iloc[:, 1:]
 features_latest_scaled = scaler.transform(features_latest)

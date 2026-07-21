@@ -1,12 +1,12 @@
-import pandas as pd
+from data_utils import load_labeled_data, load_latest_data
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
-from common import DATA_DIR, print_statistics
+from common import print_statistics
 
 # Step 1: Data Preparation
 # 1. Load the training data
-train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+train_data = load_labeled_data('train.csv')
 
 # 2. Separate data into X (features) and Y (labels)
 X_train = train_data.iloc[:, :-1]
@@ -25,7 +25,7 @@ model.fit(X_train, Y_train)
 
 # Step 3: Model Testing
 # 1. Load and scale the test data
-test_data = pd.read_csv(DATA_DIR / 'test.csv', header=None)
+test_data = load_labeled_data('test.csv')
 X_test = scaler.transform(test_data.iloc[:, :-1])
 Y_test = test_data.iloc[:, -1]
 
@@ -40,7 +40,7 @@ print_statistics(tp=TP, fp=FP, tn=TN, fn=FN)
 
 # Step 4: Creating Predictions
 # 1. Load data from latest.csv
-latest_data = pd.read_csv(DATA_DIR / 'latest.csv')
+latest_data = load_latest_data()
 
 # 2. Predict scores using the model and print the top 5 stock tickers along with their percentage scores
 stock_tickers = latest_data.iloc[:, 0]
