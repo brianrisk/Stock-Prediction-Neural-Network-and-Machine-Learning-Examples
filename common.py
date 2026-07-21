@@ -2,6 +2,8 @@ from pathlib import Path
 
 from scipy.stats import fisher_exact
 
+from evaluation import classification_metrics
+
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_ROOT / 'example_data'
 RESULTS_DIR = PROJECT_ROOT / 'results'
@@ -13,10 +15,8 @@ def print_statistics(tp: int, fp: int, fn: int, tn: int):
     # Step 5: Statistical Analysis
     # Using the counts obtained from Step 4, perform Fisher's exact test to determine the p-value.
     total = tp + fp + tn + fn
-    predicted_positive = tp + fp
     overall_positive_rate = float(fn + tp) / total if total else 0.0
-    precision = float(tp) / predicted_positive if predicted_positive else 0.0
-    accuracy = float(tp + tn) / total if total else 0.0
+    metrics = classification_metrics(tp=tp, fp=fp, fn=fn, tn=tn)
     p_value = calculate_precision_p_value(tp=tp, fp=fp, fn=fn, tn=tn)
 
     # Step 6: Output
@@ -26,8 +26,12 @@ def print_statistics(tp: int, fp: int, fn: int, tn: int):
     print(f'FN: {fn}')
     print(f'FP: {fp}')
     print(f'Overall positive rate: {overall_positive_rate}')
-    print(f'Precision: {precision}')
-    print(f'Accuracy: {accuracy}')
+    print(f"Precision: {metrics['precision']}")
+    print(f"Recall: {metrics['recall']}")
+    print(f"F1: {metrics['f1']}")
+    print(f"Accuracy: {metrics['accuracy']}")
+    print(f"Balanced accuracy: {metrics['balanced_accuracy']}")
+    print(f"Prediction coverage: {metrics['coverage']}")
     print(f'P-value of precision: {p_value}')
 
 
