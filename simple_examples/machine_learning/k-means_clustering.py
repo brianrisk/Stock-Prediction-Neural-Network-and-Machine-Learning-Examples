@@ -18,7 +18,13 @@ X_train_scaled = scaler.fit_transform(X_train)
 # 1. Ensure the model's input features match the number of columns in X, excluding the label column
 # 2. Train the model using the X and Y variables from Step 1
 model = KMeans(n_clusters=2, random_state=42) # We use 2 clusters since there are two classes (1 and 0)
-model.fit(X_train_scaled, Y_train)
+train_clusters = model.fit_predict(X_train_scaled)
+# Cluster numbers are arbitrary, so identify the cluster with the higher
+# positive-label rate using training data only.
+positive_cluster = max(
+    range(model.n_clusters),
+    key=lambda cluster: Y_train[train_clusters == cluster].mean(),
+)
 
 # Step 3: Model Testing
 # 1. Load and scale the test data from test.csv using scaler
@@ -28,7 +34,7 @@ Y_test = data_test.iloc[:, -1]
 X_test_scaled = scaler.transform(X_test)
 
 # 2. Get predictions by running the model on the scaled test data
-Y_pred = model.predict(X_test_scaled)
+Y_pred = (model.predict(X_test_scaled) == positive_cluster).astype(int)
 
 # 3. Obtain the confusion matrix variables and use print_statistics to execute print_statistics
 tn, fp, fn, tp = confusion_matrix(Y_test, Y_pred).ravel()
@@ -39,15 +45,18 @@ print_statistics(tp=tp, fp=fp, tn=tn, fn=fn)
 data_latest = pd.read_csv(DATA_DIR / 'latest.csv')
 stock_tickers = data_latest.iloc[:, 0]
 features_latest = data_latest.iloc[:, 1:]
+features_latest_scaled = scaler.transform(features_latest)
 
 # 2. Predict scores using the model and print the top 5 stock tickers along with their percentage scores
-scores = model.transform(features_latest) # Get the distance of each point from cluster centers
-# Getting the percentage score as the inverse of distance to the cluster center, normalized
-# by the sum of distances to all centers
-percentage_scores = 1 - (scores[:, 0] / scores.sum(axis=1))
+distances = model.transform(features_latest_scaled)
+negative_cluster = 1 - positive_cluster
+# A relative-closeness score: 1 near the positive center, 0 near the negative.
+percentage_scores = (
+    distances[:, negative_cluster]
+    / (distances[:, positive_cluster] + distances[:, negative_cluster])
+)
 top_5_indices = percentage_scores.argsort()[-5:][::-1] # Get indices of top 5 scores
 
 # Print top 5 stock tickers with their percentage scores
 for i in top_5_indices:
     print(f"{stock_tickers[i]}: {percentage_scores[i]:.2%}")
-
