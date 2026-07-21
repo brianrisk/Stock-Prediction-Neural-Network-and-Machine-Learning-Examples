@@ -5,6 +5,9 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow import keras
 
 from common import print_statistics
+from reproducibility import seed_everything
+
+seed_everything()
 
 # Step 1: Data Preparation
 # Load training data

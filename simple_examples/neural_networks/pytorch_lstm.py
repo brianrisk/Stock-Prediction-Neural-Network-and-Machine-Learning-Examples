@@ -5,6 +5,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from common import print_statistics
+from reproducibility import seed_everything
+
+seed_everything()
 
 # Step 1: Data Preparation
 data_train = load_labeled_data('train.csv')

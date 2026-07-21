@@ -4,6 +4,7 @@
 
 import random
 from common import print_statistics
+from reproducibility import seed_everything
 from data_utils import load_labeled_data
 
 # Global Constants
@@ -53,6 +54,7 @@ class Chromosome:
 
 
 def main():
+    seed_everything()
     train_data = load_labeled_data('train.csv')
     test_data = load_labeled_data('test.csv')
 

@@ -3,6 +3,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
 from common import print_statistics
+from reproducibility import seed_everything
+
+seed_everything()
 
 # Step 1: Data Preparation
 # 1.1 Load the training data

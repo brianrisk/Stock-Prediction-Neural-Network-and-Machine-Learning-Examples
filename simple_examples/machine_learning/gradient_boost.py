@@ -3,6 +3,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import confusion_matrix
 from common import print_statistics
+from reproducibility import seed_everything
+
+seed_everything()
 
 # Step 1: Data Preparation
 # Load the training data

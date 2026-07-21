@@ -14,10 +14,11 @@ from torch.utils.data import DataLoader
 from common import calculate_precision_p_value, PREDICTION_THRESHOLD, RESULTS_DIR
 from hyperparameter_tuning.config import (
     Hyper, hyperparameter_values, EXPLORE_ALL_COMBINATIONS,
-    NUMBER_OF_COMBINATIONS_TO_TRY, CPU_COUNT, RERUN_COUNT
+    NUMBER_OF_COMBINATIONS_TO_TRY, CPU_COUNT, RERUN_COUNT, RANDOM_SEED
 )
 from hyperparameter_tuning.get_ffnn import get_ffnn
 from hyperparameter_tuning.load_data import load_data
+from reproducibility import seed_everything
 
 # Configure logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
@@ -59,15 +60,16 @@ def evaluate_hyperparameters(args):
     """Evaluate the model with given hyperparameters."""
     iteration, values = args
     params = dict(zip(hyperparameter_values.keys(), values))
+    seed = seed_everything(RANDOM_SEED + iteration)
     start_time = time.time()
 
     try:
         model_class = get_ffnn(params, input_feature_size)
         p_values = [run_model_for_hyperparameters(params, model_class) for _ in range(RERUN_COUNT)]
         p_value_median = median(p_values)
-        return params, p_value_median, time.time() - start_time, None  # Calculate elapsed time here
+        return params, p_value_median, time.time() - start_time, None, seed
     except Exception as err:
-        return params, None, None, str(err)
+        return params, None, None, str(err), seed
 
 
 def store_results(results, errors):
@@ -82,7 +84,7 @@ def store_results(results, errors):
     errors = [{str(key): str(value) for key, value in data.items()} for data in errors]
 
     with (RESULTS_DIR / 'hyperparameter_results.csv').open('w', newline='') as csvfile:
-        fieldnames = [str(key) for key in hyperparameter_values.keys()] + ['p_value', 'execution_time']
+        fieldnames = [str(key) for key in hyperparameter_values.keys()] + ['p_value', 'execution_time', 'seed']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(sorted_results)
@@ -90,7 +92,7 @@ def store_results(results, errors):
     # If there were errors, save them too
     if errors:
         with (RESULTS_DIR / 'errors.csv').open('w', newline='') as errorFile:
-            fieldnames = [str(key) for key in hyperparameter_values.keys()] + ['error']
+            fieldnames = [str(key) for key in hyperparameter_values.keys()] + ['error', 'seed']
             writer = csv.DictWriter(errorFile, fieldnames=fieldnames)
             writer.writeheader()
             writer.writerows(errors)
@@ -103,12 +105,19 @@ def iterate_hyperparameters():
 
     with Pool(CPU_COUNT) as pool:
         combinations = get_hyperparameter_combinations()
-        for params, p_value, exec_time, error in pool.map(evaluate_hyperparameters, enumerate(combinations, 1)):
-            result = {**params, 'p_value': p_value, 'execution_time': exec_time}
+        for params, p_value, exec_time, error, seed in pool.map(
+            evaluate_hyperparameters, enumerate(combinations, 1)
+        ):
+            result = {
+                **params,
+                'p_value': p_value,
+                'execution_time': exec_time,
+                'seed': seed,
+            }
             if error is None:
                 results.append(result)
             else:
-                errors.append({**params, 'error': error})
+                errors.append({**params, 'error': error, 'seed': seed})
 
     best_result = min(results, key=lambda x: x['p_value'])
     print(f"The best parameters are: {best_result} with a p-value of {best_result['p_value']}")

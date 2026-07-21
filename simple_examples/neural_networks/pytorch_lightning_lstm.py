@@ -7,6 +7,9 @@ from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
 from common import print_statistics
+from reproducibility import seed_everything
+
+seed_everything()
 
 # Step 1: Data Preparation
 # Loading the training data
