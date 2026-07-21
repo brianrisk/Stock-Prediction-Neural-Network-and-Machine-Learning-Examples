@@ -13,5 +13,6 @@ jobs:
         with:
           python-version: '3.11'
           cache: pip
-      - run: pip install -r requirements.txt
+      - run: pip install -e '.[dev]'
       - run: python -m unittest discover -s tests -p 'test_*.py'
+      - run: ruff check common.py data_utils.py evaluation.py reproducibility.py validation.py tests

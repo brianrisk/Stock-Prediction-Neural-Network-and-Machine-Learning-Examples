@@ -1,5 +1,9 @@
 .DS_Store
 .idea
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
 *output/
 *__pycache__*
 model.*
