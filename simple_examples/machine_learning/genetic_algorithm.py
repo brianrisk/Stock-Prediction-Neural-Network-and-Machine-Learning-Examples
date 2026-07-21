@@ -4,11 +4,11 @@
 
 import random
 import pandas as pd
-from common import print_statistics
+from common import DATA_DIR, print_statistics
 
 # Global Constants
-TRAIN_CSV = "../example_data/train.csv"
-TEST_CSV = "../example_data/test.csv"
+TRAIN_CSV = DATA_DIR / 'train.csv'
+TEST_CSV = DATA_DIR / 'test.csv'
 GENES_MIN = 2
 GENES_MAX = 8
 GENE_BOUND_MIN = 0.5

@@ -6,11 +6,11 @@ from sklearn.preprocessing import StandardScaler
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from common import print_statistics
+from common import DATA_DIR, print_statistics
 
 # Step 1: Data Preparation
 # Loading the training data
-train_data = pd.read_csv('../../example_data/train.csv', header=None)
+train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
 X = train_data.iloc[:, :-1].values
 Y = train_data.iloc[:, -1].values
 
@@ -62,7 +62,7 @@ trainer.fit(model, train_loader)
 
 # Step 4: Testing the Model
 # Loading the test data
-test_data = pd.read_csv('../../example_data/test.csv', header=None)
+test_data = pd.read_csv(DATA_DIR / 'test.csv', header=None)
 X_test = test_data.iloc[:, :-1].values
 Y_test = test_data.iloc[:, -1].values
 
@@ -85,7 +85,7 @@ TN, FP, FN, TP = confusion_matrix(Y_test, predictions_bin).ravel()
 print_statistics(tp=TP, fp=FP, tn=TN, fn=FN)
 
 # Load latest data
-latest_data = pd.read_csv('../../example_data/latest.csv')
+latest_data = pd.read_csv(DATA_DIR / 'latest.csv')
 tickers = latest_data.iloc[:, 0].values
 X_latest = scaler.transform(latest_data.iloc[:, 1:].values)
 

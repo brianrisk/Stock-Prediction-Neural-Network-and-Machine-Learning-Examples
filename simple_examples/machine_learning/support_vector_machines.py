@@ -2,11 +2,11 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix
-from common import print_statistics
+from common import DATA_DIR, print_statistics
 
 # Step 1: Data Preparation
 # 1.1 Load the training data
-train_data = pd.read_csv('../../example_data/train.csv', header=None)
+train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
 
 # 1.2 Separate data into X (features) and Y (labels)
 X_train = train_data.iloc[:, :-1]
@@ -25,7 +25,7 @@ model.fit(X_train, Y_train)
 
 # Step 3: Model Testing
 # 3.1 Load and scale the test data
-test_data = pd.read_csv('../../example_data/test.csv', header=None)
+test_data = pd.read_csv(DATA_DIR / 'test.csv', header=None)
 X_test = scaler.transform(test_data.iloc[:, :-1])
 Y_test = test_data.iloc[:, -1]
 
@@ -38,7 +38,7 @@ print_statistics(tp=TP, fp=FP, tn=TN, fn=FN)
 
 # Step 4: Creating Predictions
 # 4.1 Load data from latest.csv
-latest_data = pd.read_csv('../../example_data/latest.csv')
+latest_data = pd.read_csv(DATA_DIR / 'latest.csv')
 stock_tickers = latest_data.iloc[:, 0]
 feature_vectors = latest_data.iloc[:, 1:]
 

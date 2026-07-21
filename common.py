@@ -1,4 +1,10 @@
+from pathlib import Path
+
 from scipy.stats import fisher_exact
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+DATA_DIR = PROJECT_ROOT / 'example_data'
+RESULTS_DIR = PROJECT_ROOT / 'results'
 
 # Level to binarize our output.
 PREDICTION_THRESHOLD = 0.5

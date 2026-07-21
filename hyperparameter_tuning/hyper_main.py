@@ -11,7 +11,7 @@ import torch
 from sklearn.metrics import confusion_matrix
 from torch.utils.data import DataLoader
 
-from common import calculate_precision_p_value, PREDICTION_THRESHOLD
+from common import calculate_precision_p_value, PREDICTION_THRESHOLD, RESULTS_DIR
 from hyperparameter_tuning.config import (
     Hyper, hyperparameter_values, EXPLORE_ALL_COMBINATIONS,
     NUMBER_OF_COMBINATIONS_TO_TRY, CPU_COUNT, RERUN_COUNT
@@ -72,6 +72,7 @@ def evaluate_hyperparameters(args):
 
 def store_results(results, errors):
     """Store results and errors to CSV files."""
+    RESULTS_DIR.mkdir(exist_ok=True)
 
     # Sort the results by p-value in ascending order and save to CSV
     sorted_results = sorted(results, key=lambda x: x['p_value'])
@@ -80,7 +81,7 @@ def store_results(results, errors):
     sorted_results = [{str(key): str(value) for key, value in data.items()} for data in sorted_results]
     errors = [{str(key): str(value) for key, value in data.items()} for data in errors]
 
-    with open('results/hyperparameter_results.csv', 'w', newline='') as csvfile:
+    with (RESULTS_DIR / 'hyperparameter_results.csv').open('w', newline='') as csvfile:
         fieldnames = [str(key) for key in hyperparameter_values.keys()] + ['p_value', 'execution_time']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -88,7 +89,7 @@ def store_results(results, errors):
 
     # If there were errors, save them too
     if errors:
-        with open('results/errors.csv', 'w', newline='') as errorFile:
+        with (RESULTS_DIR / 'errors.csv').open('w', newline='') as errorFile:
             fieldnames = [str(key) for key in hyperparameter_values.keys()] + ['error']
             writer = csv.DictWriter(errorFile, fieldnames=fieldnames)
             writer.writeheader()

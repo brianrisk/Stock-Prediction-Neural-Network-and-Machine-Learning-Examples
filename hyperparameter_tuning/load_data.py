@@ -3,9 +3,11 @@ import torch
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset
 
+from common import DATA_DIR
+
 
 def load_data():
-    train_data = pd.read_csv('../example_data/train.csv', header=None)
+    train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
     X = train_data.iloc[:, :-1].values
     Y = train_data.iloc[:, -1].values
 
@@ -13,7 +15,7 @@ def load_data():
     X_scaled = scaler.fit_transform(X)
     train_dataset = TensorDataset(torch.tensor(X_scaled), torch.tensor(Y))
 
-    test_data = pd.read_csv('../example_data/test.csv', header=None)
+    test_data = pd.read_csv(DATA_DIR / 'test.csv', header=None)
     X_test = test_data.iloc[:, :-1].values
     Y_test = test_data.iloc[:, -1].values
     X_test_scaled = scaler.transform(X_test)
