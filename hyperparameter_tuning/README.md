@@ -33,8 +33,10 @@ exploring for each hyperparameter. Adjust the values in this dictionary to searc
   hyperparameter space. The number of random combinations sampled is set by `NUMBER_OF_COMBINATIONS_TO_TRY`.
 
 ## Performance Ranking
-All models were trained and tested on the `example_data` from [D.AT](https://d.at/ref/github-python-examples)
-to rank which performed best.
+Models are trained on the earlier portion of `train.csv` and ranked on its
+chronological validation tail. `test.csv` remains untouched for final evaluation.
+Set `VALIDATION_FRACTION` and, for overlapping windows, `EMBARGO_ROWS` in
+`config.py`.
 
 Precision p-value is the method for comparing performance.  Why precision?
 When investing, you care much more about the performance of the stocks you have purchased
@@ -65,5 +67,11 @@ To customize the hyperparameter search:
 
 ---
 
-Run the script and results will be saved it the `results` dir. Evaluate the performance across different hyperparameter
-combinations to find the optimal network configuration for your task.
+From the repository root, run:
+
+```bash
+python -m hyperparameter_tuning.hyper_main
+```
+
+Results are saved in the repository's `results` directory. The recorded seed
+allows a selected run to be reproduced.
