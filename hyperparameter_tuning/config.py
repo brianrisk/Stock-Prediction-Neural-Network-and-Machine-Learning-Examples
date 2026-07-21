@@ -50,3 +50,8 @@ RERUN_COUNT = 3
 
 # Set number of CPUs for parallel execution; Max is system's cpu_count
 CPU_COUNT = cpu_count()
+
+# Reserve the chronological tail of train.csv for tuning. test.csv remains an
+# untouched final evaluation set. Set an embargo when adjacent rows overlap.
+VALIDATION_FRACTION = 0.2
+EMBARGO_ROWS = 0

@@ -4,10 +4,17 @@ from sklearn.preprocessing import StandardScaler
 from torch.utils.data import TensorDataset
 
 from common import DATA_DIR
+from hyperparameter_tuning.config import EMBARGO_ROWS, VALIDATION_FRACTION
+from validation import chronological_split
 
 
 def load_data():
-    train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+    all_train_data = pd.read_csv(DATA_DIR / 'train.csv', header=None)
+    train_data, validation_data = chronological_split(
+        all_train_data,
+        validation_fraction=VALIDATION_FRACTION,
+        gap=EMBARGO_ROWS,
+    )
     X = train_data.iloc[:, :-1].values
     Y = train_data.iloc[:, -1].values
 
@@ -15,11 +22,10 @@ def load_data():
     X_scaled = scaler.fit_transform(X)
     train_dataset = TensorDataset(torch.tensor(X_scaled), torch.tensor(Y))
 
-    test_data = pd.read_csv(DATA_DIR / 'test.csv', header=None)
-    X_test = test_data.iloc[:, :-1].values
-    Y_test = test_data.iloc[:, -1].values
-    X_test_scaled = scaler.transform(X_test)
+    X_validation = validation_data.iloc[:, :-1].values
+    Y_validation = validation_data.iloc[:, -1].values
+    X_validation_scaled = scaler.transform(X_validation)
 
     input_feature_size = X_scaled.shape[1]
 
-    return train_dataset, X_test_scaled, Y_test, input_feature_size
+    return train_dataset, X_validation_scaled, Y_validation, input_feature_size

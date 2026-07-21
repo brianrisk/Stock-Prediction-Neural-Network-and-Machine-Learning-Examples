@@ -23,7 +23,7 @@ from hyperparameter_tuning.load_data import load_data
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 # Load data
-train_dataset, X_test_scaled, Y_test, input_feature_size = load_data()
+train_dataset, X_validation_scaled, Y_validation, input_feature_size = load_data()
 
 
 def get_hyperparameter_combinations():
@@ -48,10 +48,10 @@ def run_model_for_hyperparameters(params, model_class):
 
     model.eval()
     with torch.no_grad():
-        predictions = model(torch.tensor(X_test_scaled)).numpy()
+        predictions = model(torch.tensor(X_validation_scaled)).numpy()
     predictions_bin = (predictions > PREDICTION_THRESHOLD).astype(int)
 
-    tn, fp, fn, tp = confusion_matrix(Y_test, predictions_bin).ravel()
+    tn, fp, fn, tp = confusion_matrix(Y_validation, predictions_bin).ravel()
     return calculate_precision_p_value(tp=tp, fp=fp, fn=fn, tn=tn)
 
 
