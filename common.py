@@ -6,9 +6,11 @@ PREDICTION_THRESHOLD = 0.5
 def print_statistics(tp: int, fp: int, fn: int, tn: int):
     # Step 5: Statistical Analysis
     # Using the counts obtained from Step 4, perform Fisher's exact test to determine the p-value.
-    overall_positive_rate = float(fn + tp) / (tp + fp + tn + fn)
-    precision = float(tp) / (tp + fp)
-    accuracy = float(tp + tn) / (tp + fp + tn + fn)
+    total = tp + fp + tn + fn
+    predicted_positive = tp + fp
+    overall_positive_rate = float(fn + tp) / total if total else 0.0
+    precision = float(tp) / predicted_positive if predicted_positive else 0.0
+    accuracy = float(tp + tn) / total if total else 0.0
     p_value = calculate_precision_p_value(tp=tp, fp=fp, fn=fn, tn=tn)
 
     # Step 6: Output
@@ -24,9 +26,18 @@ def print_statistics(tp: int, fp: int, fn: int, tn: int):
 
 
 def calculate_precision_p_value(tp: int, fp: int, fn: int, tn: int):
-    # if the prediction precision is lower than the overall rate, return 1.0
-    if (tp / (tp + fp)) < ((fn + tp) / (tp + fp + tn + fn)):
+    """Return a one-sided Fisher p-value for positive prediction enrichment."""
+    total = tp + fp + fn + tn
+    predicted_positive = tp + fp
+    if not total or not predicted_positive:
         return 1.0
-    contingency_table = [[tp, tp + fp], [fn + tp, tp + fp + tn + fn]]
-    _, p_value = fisher_exact(contingency_table)
+
+    precision = tp / predicted_positive
+    overall_positive_rate = (tp + fn) / total
+    if precision <= overall_positive_rate:
+        return 1.0
+
+    # Rows are predicted class and columns are actual class.
+    contingency_table = [[tp, fp], [fn, tn]]
+    _, p_value = fisher_exact(contingency_table, alternative='greater')
     return p_value
