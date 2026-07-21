@@ -23,8 +23,15 @@ from reproducibility import seed_everything
 # Configure logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
-# Load data
-train_dataset, X_validation_scaled, Y_validation, input_feature_size = load_data()
+_data_cache = None
+
+
+def get_data():
+    """Load data on first use so importing this module has no file-system side effects."""
+    global _data_cache
+    if _data_cache is None:
+        _data_cache = load_data()
+    return _data_cache
 
 
 def get_hyperparameter_combinations():
@@ -42,6 +49,7 @@ def get_hyperparameter_combinations():
 
 def run_model_for_hyperparameters(params, model_class):
     """Train the model with given hyperparameters and return the p-value."""
+    train_dataset, X_validation_scaled, Y_validation, _ = get_data()
     train_loader = DataLoader(train_dataset, batch_size=params[Hyper.BATCH_SIZE])
     model = model_class()
     trainer = L.Trainer(max_epochs=params[Hyper.MAX_EPOCHS], logger=False)
@@ -64,6 +72,7 @@ def evaluate_hyperparameters(args):
     start_time = time.time()
 
     try:
+        _, _, _, input_feature_size = get_data()
         model_class = get_ffnn(params, input_feature_size)
         p_values = [run_model_for_hyperparameters(params, model_class) for _ in range(RERUN_COUNT)]
         p_value_median = median(p_values)
