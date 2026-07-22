@@ -10,7 +10,7 @@
 * [Getting Started](#getting-started)
 * [About the Example Stock Data](#about-the-example-stock-data)
 
-## Overview
+## Simple Examples
 These are ML and NN methods ready to launch out of the box. Designed to be easy for those looking to learn new techniques for stock prediction. These examples are meant to be simple to understand and highlight the essential components of each method. Examples also show how to run the models on current data in order to get stock predictions.
 
 > **Educational use only:** These examples are demonstrations, not investment
@@ -66,7 +66,7 @@ python -m simple_examples.machine_learning.logistic_regression
 python -m simple_examples.neural_networks.pytorch_ffnn
 ```
 
-## Neural Net Hyperparameter Optimization
+## Hyperparameter Optimization
 Designed for easy configuration of what hyperparameter values are explored. Multi-threaded processing for quick runtimes.
 
 1. Code is in `hyperparameter_tuning`
