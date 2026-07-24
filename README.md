@@ -53,17 +53,9 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-3. Choose one installation command:
+3. Install libraries:
 
-| What you want to run | Command |
-| --- | --- |
-| All examples | `pip install -r requirements.txt` |
-| Classical ML only | `pip install -e .` |
-| Classical ML, PyTorch, and Lightning | `pip install -e '.[torch]'` |
-| Classical ML, TensorFlow, and Keras | `pip install -e '.[tensorflow]'` |
-
-`requirements.txt` installs the project in editable mode with every supported
-framework, so you do not need to run the other installation commands as well.
+ `pip install -r requirements.txt`
 
 4. [Download the starter data](https://d.at/example-data/) and place the
    extracted `example_data` directory at the repository root:
